@@ -1,17 +1,34 @@
 <template>
-  <div id="app">
-    <!-- Fixed Breadcrumb here -->
+  <v-app>
     <fixed-toolbar />
-    <router-view />
-  </div>
+    <v-main>
+      <router-view />
+    </v-main>
+  </v-app>
 </template>
 
-<style lang="scss">
-#app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+<script>
+import FixedToolbar from "./components/FixedToolbar.vue";
+
+export default {
+  name: "App",
+
+  data: () => ({
+    FixedToolbar //
+  })
+};
+</script>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap");
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+span,
+a {
+  font-family: "Roboto Mono", monospace !important;
 }
 </style>
