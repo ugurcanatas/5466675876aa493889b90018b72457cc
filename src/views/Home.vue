@@ -4,50 +4,36 @@
     fill-height
     class="justify-space-between align-self-stretch d-flex flex-column pa-0"
   >
-    <div
-      class="flex-row d-flex justify-space-between align-self-stretch align-center ma-6"
-    >
-      <div class="crumbs">
-        <div
-          :class="`crumb ${activeStepperIndex === i ? 'active' : 'not-active'}`"
-          v-for="(crumb, i) in crumbData"
-          :key="i"
-        >
-          <a class="ma-8 white--text crumb-text">Adım {{ i + 1 }}</a>
-        </div>
-      </div>
-      <div>
-        <h2>{{ crumbData[activeStepperIndex].prompt }}</h2>
-      </div>
-    </div>
+    <crumbs :crumbData="crumbData" :currentCrumbIndex="currentCrumbIndex" />
+    <!-- make hairline css global -->
     <div class="hairline"></div>
-    <div class="align-self-stretch flex-grow-1">Part Form</div>
-
-    <!-- <v-flex>
-      <v-row v-for="item in hotels" :key="item.id">
-        <p>{{ item }}</p>
-      </v-row>
-    </v-flex> -->
+    <hotels
+      :hotelsWithDetails="isFiltered ? filteredHotels : hotelsWithDetails"
+    />
   </v-container>
 </template>
 
 <script>
 import store from "../store/index";
 import { mapActions } from "vuex";
-import StepperWrapper from "../components/Stepper.vue";
-import FormWrapper from "../components/FormComponent.vue";
+import Crumbs from "../components/Crumbs.vue";
+import Hotels from "../components/Hotels.vue";
 /*eslint-disable */
 export default {
   name: "Home",
   components: {
-    StepperWrapper,
-    FormWrapper
+    Crumbs,
+    Hotels
   },
   data() {
     return {
       unsubscribe: null,
       hotels: [],
-      activeStepperIndex: 0,
+      hotelsWithDetails: [],
+      filteredHotels: [],
+      isFiltered: false,
+      completedCrumbs: [0],
+      currentCrumbIndex: 0,
       activeTitle: "",
       crumbData: [
         {
@@ -66,32 +52,32 @@ export default {
     };
   },
   beforeDestroy() {
-    //unsub from store
+    //unsub from store subscription
     this.unsubscribe && this.unsubscribe();
   },
-  created() {
+  // Fetch hotels with promise.all in component created lifecycle hook
+  async created() {
     this.unsubscribe = store.subscribe(this.subscribeHandler);
-  },
-  // Fetch hotels lists async when component is mounted
-  async mounted() {
-    //uncomment later
-    // const result = await fetch(process.env.VUE_APP_ENDPOINT_HOTEL_LIST, {
-    //   method: "GET"
-    // });
-    // const data = await result.json();
-    // console.log("Data", data);
-    // this.actionPushHotels(data);
-    setInterval(() => {
-      if (this.activeStepperIndex === 2) {
-        this.activeStepperIndex = 0;
-        return;
-      }
-      this.activeStepperIndex++;
-    }, 5000);
+
+    try {
+      const promises = [
+        process.env.VUE_APP_ENDPOINT_HOTEL_LIST,
+        process.env.VUE_APP_ENDPOINT_HOTEL_DETAILS
+      ].map(async url => await this.fetchGet(url));
+
+      const resolved = (await Promise.all(promises)).map(data => data);
+      //const [hotels, hotelsWithDetails] = resolved;
+      //this.actionPushHotels(hotels); //we don't need this action.
+      this.actionMerge(resolved);
+    } catch (error) {
+      console.log("Some Error", error);
+    }
   },
   methods: {
     ...mapActions({
-      actionPushHotels: "hotelModule/actionPushHotels"
+      actionPushHotels: "hotelModule/actionPushHotels",
+      actionPushHotelsWithDetails: "hotelModule/actionPushHotelsWithDetails",
+      actionMerge: "hotelModule/actionMerge"
     }),
     subscribeHandler: function({ type, payload }) {
       console.log("Listening store events", type, payload);
@@ -99,43 +85,31 @@ export default {
         case "hotelModule/pushHotels":
           this.hotels = payload;
           break;
+        case "hotelModule/pushMerged":
+          this.hotelsWithDetails = payload;
+          break;
+        case "hotelModule/pushFiltered":
+          this.filteredHotels = payload;
+          this.isFiltered = true;
+          break;
         default:
           break;
       }
+    },
+    fetchGet: async function(URL) {
+      const res = await fetch(URL, {
+        method: "GET"
+      });
+
+      return res.json();
     }
   }
 };
 </script>
 <style lang="sass">
-$crumbs-bg: #C2C4ED
-$crumbs-active: #3139F0
-
-.crumbs
-  display: flex
-  height: 48px
-  background-color: $crumbs-bg
-  clip-path: polygon(95% 0, 100% 50%, 95% 100%, 0% 100%, 0% 50%, 0% 0%)
-  border-radius: 8px
-
-.crumb
-  transition: .2s cubic-bezier(.71,.7,.42,-0.14)
-  border-radius: 8px
-  background-color: white
-  clip-path: polygon(90% 0, 100% 50%, 90% 100%, 0% 100%, 10% 50%, 0% 0%)
-  &:first-child
-    clip-path: polygon(0% 0%, 90% 0%, 100% 50%, 90% 100%, 0% 100%)
-  &.active
-    background-color: $crumbs-active
-  &.not-active
-    background-color: $crumbs-bg
-  > a
-    font-weight: 600
-    font-size: 1em
-    line-height: 48px
-    text-decoration: none
-
 .hairline
-  background: #efefef
-  height: 1px
-  width: 100%
+  &.top
+    border-top: thin solid rgba(0,0,0,.05)
+  &.bottom
+    border-bottom: thin solid #efefef
 </style>
