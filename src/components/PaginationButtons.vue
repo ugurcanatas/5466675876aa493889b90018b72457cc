@@ -1,6 +1,6 @@
 <template>
   <div :class="`pagin-btns ${showButtons ? 'show-btn' : 'hide-btn'}`">
-    <button :disabled="!showButtons">
+    <button @click="$emit('previousForm')">
       <v-icon>mdi-chevron-left</v-icon>
       Previous
     </button>
@@ -27,6 +27,7 @@ export default {
   width: 100%
   justify-content: space-between
   padding: 16px
+  background-color: #e6e7ff
 
 .btn-pgn
   background-color: #467ee3

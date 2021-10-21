@@ -25,7 +25,7 @@ export default {
 </script>
 
 <style lang="sass">
-$toolbar-color: #d6e7ff
+$toolbar-color: #3139f0
 
 .fixed-toolbar
 

@@ -18,6 +18,7 @@
       v-else-if="currentCrumbIndex === 1"
       :selected-hotel="selectedHotel"
     />
+    <payment v-else-if="currentCrumbIndex === 2" />
 
     <pagination-buttons
       @nextForm="nextFormEvent"
@@ -33,14 +34,16 @@ import store from "../store/index";
 import { mapActions } from "vuex";
 import Crumbs from "../components/Crumbs.vue";
 import Hotels from "../components/Step1/Hotels.vue";
-import DetailsView from "../components/DetailsView.vue";
-/*eslint-disable */
+import DetailsView from "../components/Step2/DetailsView.vue";
+import Payment from "../components/Step3/Payment.vue";
+
 export default {
   name: "Home",
   components: {
     Crumbs,
     Hotels,
-    DetailsView
+    DetailsView,
+    Payment
   },
   data() {
     return {
