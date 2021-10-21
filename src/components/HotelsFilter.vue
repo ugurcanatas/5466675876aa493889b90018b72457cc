@@ -1,18 +1,21 @@
 <template>
   <div class="hotels-filter-wrapper">
-    <v-form v-model="validForm">
+    <v-form v-model="validForm" ref="nestedRef">
       <v-row no-gutters>
         <v-select
           label="Adult size"
           v-model="formModel['adult_size']"
           :items="adultSizes"
           @input="autoCompleteValidation"
+          required
+          :rules="[v => !!v || 'Adult size is required']"
         />
         <v-select
           label="Child size"
           v-model="formModel['child_size']"
           :items="childSizes"
           @input="autoCompleteValidation"
+          required
         />
         <v-dialog
           width="290px"
@@ -27,6 +30,7 @@
               v-on="on"
               readonly
               prepend-icon="mdi-calendar"
+              :rules="[v => !!v || 'Arrival date is required']"
             />
           </template>
           <v-date-picker v-model="formModel['date_arrival']"></v-date-picker>
@@ -45,6 +49,7 @@
               v-on="on"
               readonly
               prepend-icon="mdi-calendar"
+              :rules="[v => !!v || 'Departure date is required']"
             />
           </template>
           <v-date-picker v-model="formModel['date_departure']"></v-date-picker>
@@ -70,6 +75,14 @@ export default {
         showDeparture: false
       }
     };
+  },
+  watch: {
+    formModel: {
+      deep: true,
+      handler: function(v) {
+        console.log("Deep Watch Value", v);
+      }
+    }
   },
   mounted() {
     // const inp = this.$refs.adultSizeField.$el.querySelector("input");

@@ -27,6 +27,9 @@ const hotelModule = {
     getFilterState: (state) => {
       return state.isFiltered;
     },
+    getFormData: () => {
+      return localStorage.getItem("formData");
+    },
   },
   mutations: {
     pushHotels: (state, payload) => {
@@ -43,6 +46,9 @@ const hotelModule = {
     },
     setIsFiltered: (state, payload) => {
       state.isFiltered = payload;
+    },
+    pushFormData: (state, payload) => {
+      localStorage.setItem("formData", JSON.stringify(payload));
     },
   },
   actions: {
@@ -73,6 +79,9 @@ const hotelModule = {
     },
     actionClearFiltered: ({ commit }) => {
       commit("setIsFiltered", false);
+    },
+    actionPushFormData: ({ commit }, payload) => {
+      commit("pushFormData", payload);
     },
   },
   //setting namespace to true so we don't get "unknown action type error" from Vue

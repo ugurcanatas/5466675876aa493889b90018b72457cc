@@ -1,7 +1,7 @@
 <template>
   <div class="align-self-stretch flex-grow-1 middle-container">
     <div class="sticky-filter hairline bottom">
-      <hotels-filter @limitChecker="filterHotels" />
+      <hotels-filter ref="formRef" @limitChecker="filterHotels" />
     </div>
     <v-row class="no-gutters pa-6">
       <v-col
@@ -9,89 +9,27 @@
         :key="i"
         class="rounded-md col-md-6 col-lg-4 col-xl-3 col-sm-6 col-12 pa-4"
       >
-        <v-card
-          active-class="none"
-          :ripple="false"
-          @click="selectCard(i)"
-          :disabled="item.isDisabled"
-          elevation="1"
-          :class="
-            `flex hotel-card pa-0 ${selectedItem === i ? 'selected' : ''}`
-          "
-        >
-          <img
-            class="card-img"
-            height="200px"
-            :src="item.room_scenic[0].photo"
-          />
-          <div class="item-header  px-4 pt-4 pb-2">
-            <p class="hotel-name mb-0">{{ item.hotel_name }}</p>
-            <p class="hotel-city mb-0">
-              {{ item.city }}
-            </p>
-          </div>
-          <div class="rating-row row no-gutters px-4 pt-2 pb-4">
-            <div class="row no-gutters align-center">
-              <v-icon size="18" color="#FDD33D">mdi-star</v-icon>
-              <div :class="`${getRatingClass(item.rating, 'range')} rating`">
-                {{ item.rating }}
-              </div>
-              <!-- <div>
-                  {{ getRatingClass(item.rating, "emojis") }}
-                </div> -->
-            </div>
-            <v-spacer />
-            <div>Other Icons</div>
-          </div>
-          <div class="pa-4 row no-gutters align-center  hairline top">
-            <div class="row no-gutters">
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <div
-                    class="pa-2 mr-4 icon-possibility"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    <v-icon color="#2145C6" size="20">{{
-                      getIcons(item.possibilities[0])
-                    }}</v-icon>
-                  </div>
-                </template>
-                <span>{{ item.possibilities[0] }}</span>
-              </v-tooltip>
-              <v-tooltip bottom>
-                <template v-slot:activator="{ on, attrs }">
-                  <div
-                    class="pa-2 mr-4 icon-possibility"
-                    v-bind="attrs"
-                    v-on="on"
-                  >
-                    <v-icon color="#2145C6" size="20">{{
-                      getIcons(item.possibilities[1])
-                    }}</v-icon>
-                  </div>
-                </template>
-                <span>{{ item.possibilities[1] }}</span>
-              </v-tooltip>
-            </div>
-            <v-card-actions>
-              <button @click.stop="showDetails" class="more-options">
-                <span class="text-1"
-                  >+ {{ item.possibilities.length - 2 }}
-                </span>
-                <span class="text-2"> &nbsp;seçenek daha</span>
-              </button>
-            </v-card-actions>
-          </div>
-        </v-card>
+        <card-item
+          :item-index="i"
+          :selected-item-index="selectedItem"
+          :item="item"
+          @showDetails="showDetails"
+          @selectCard="selectCard"
+        />
       </v-col>
     </v-row>
+    <sidebar
+      @closeSidebar="closeSidebar"
+      :showSidebar="showSidebar"
+      :singleHotelInfo="singleHotelInfo"
+    />
   </div>
 </template>
 
 <script>
 import HotelsFilter from "../components/HotelsFilter.vue";
 import { mapActions, mapGetters } from "vuex";
+import CardItem from "./CardItem.vue";
 
 export default {
   props: {
@@ -102,12 +40,15 @@ export default {
     }
   },
   components: {
-    HotelsFilter
+    HotelsFilter,
+    CardItem
   },
   data() {
     return {
       formModel: {},
-      selectedItem: -1
+      selectedItem: -1,
+      singleHotelInfo: {},
+      showSidebar: false
     };
   },
   computed: {
@@ -115,13 +56,26 @@ export default {
       getMergedHotels: "hotelModule/getMergedHotels"
     })
   },
+  watch: {
+    formModel: {
+      deep: true,
+      handler: function(v) {
+        console.log("Deep Watch Value", v);
+      }
+    }
+  },
+  mounted() {
+    console.log("Refs", this.$refs.formRef.$children[0].validate());
+  },
   methods: {
     ...mapActions({
-      actionPushFiltered: "hotelModule/actionPushFiltered"
+      actionPushFiltered: "hotelModule/actionPushFiltered",
+      actionPushFormData: "hotelModule/actionPushFormData"
     }),
     filterHotels: function({ child_size, adult_size }) {
       //This disables items that does not match current conditions
       this.selectedItem = -1;
+      this.$emit("hideButtons");
       let filteredHotels = this.hotelsWithDetails.map(hotel => {
         const { max_adult_size, child_status } = hotel;
         let isDisabled = false;
@@ -158,45 +112,22 @@ export default {
       // });
       this.actionPushFiltered(filteredHotels);
     },
+    returnFormData: function() {},
     selectCard: function(i) {
-      console.log("Card Clicked");
-      this.selectedItem = i;
+      if (this.$refs.formRef.$refs.nestedRef.validate()) {
+        console.log("Card Clicked");
+        this.selectedItem = i;
+        this.$emit("showButtons");
+      }
     },
-    showDetails: function() {
+    showDetails: function(item) {
       console.log("Show details clicked");
+      this.singleHotelInfo = item;
+      this.showSidebar = true;
     },
-    getRatingClass: function(rating, type) {
-      let converted = Number(rating);
-      switch (true) {
-        case converted >= 0 && converted < 1.25:
-          return type === "range" ? "low" : "🥶";
-        case converted >= 1.25 && converted < 2.5:
-          return type === "range" ? "moderate" : "🥲";
-        case converted >= 2.5 && converted < 3.75:
-          return type === "range" ? "mid" : "🙂";
-        case converted >= 3.75 && converted <= 5:
-          return type === "range" ? "high" : "🥳";
-        default:
-          break;
-      }
-    },
-    getIcons: function(type) {
-      switch (type) {
-        case "Kapalı Yüzme Havuzu":
-          return "mdi-pool";
-        case "Açık Yüzme Havuzu":
-        case "Açık yüzme havuzu":
-          return "mdi-pool";
-        case "SPA Salonu":
-          return "mdi-spa";
-        case "Spor Salonu":
-          return "mdi-weight-lifter";
-        case "Sauna":
-          return "mdi-pot-steam";
-
-        default:
-          break;
-      }
+    closeSidebar: function() {
+      //this.singleHotelInfo = {};
+      this.showSidebar = false;
     }
   }
 };

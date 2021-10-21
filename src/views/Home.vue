@@ -8,6 +8,9 @@
     <!-- make hairline css global -->
     <div class="hairline"></div>
     <hotels
+      ref="hotelRef"
+      @showButtons="showButtons = true"
+      @hideButtons="showButtons = false"
       :hotelsWithDetails="isFiltered ? filteredHotels : hotelsWithDetails"
     />
   </v-container>
@@ -48,7 +51,8 @@ export default {
           icon: "mdi-credit-card",
           prompt: "Önizleme ve ödeme"
         }
-      ]
+      ],
+      showButtons: false
     };
   },
   beforeDestroy() {
@@ -102,7 +106,11 @@ export default {
       });
 
       return res.json();
-    }
+    },
+    nextFormEvent: function() {
+      console.log("Hotel Ref", this.$refs.hotelRef);
+    },
+    previousFormEvent: function() {}
   }
 };
 </script>
