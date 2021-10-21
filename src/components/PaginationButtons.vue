@@ -4,10 +4,10 @@
       <v-icon>mdi-chevron-left</v-icon>
       Previous
     </button>
-    <button @click="$emit('nextForm')" :disabled="!showButtons" class="btn-pgn">
+    <v-btn @click="$emit('nextForm')">
       Next
       <v-icon color="white">mdi-chevron-right</v-icon>
-    </button>
+    </v-btn>
   </div>
 </template>
 
@@ -24,8 +24,9 @@ export default {
 <style lang="sass">
 .pagin-btns
   display: flex
-  flex-direction: row,
+  width: 100%
   justify-content: space-between
+  padding: 16px
 
 .btn-pgn
   background-color: #467ee3

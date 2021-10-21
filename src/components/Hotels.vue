@@ -1,7 +1,11 @@
 <template>
   <div class="align-self-stretch flex-grow-1 middle-container">
     <div class="sticky-filter hairline bottom">
-      <hotels-filter ref="formRef" @limitChecker="filterHotels" />
+      <hotels-filter
+        ref="formRef"
+        @limitChecker="filterHotels"
+        :form-model="formModel"
+      />
     </div>
     <v-row class="no-gutters pa-6">
       <v-col
@@ -45,15 +49,20 @@ export default {
   },
   data() {
     return {
-      formModel: {},
+      formModel: {
+        adult_size: 1,
+        child_size: 0
+      },
       selectedItem: -1,
       singleHotelInfo: {},
-      showSidebar: false
+      showSidebar: false,
+      filterOnCreated: false
     };
   },
   computed: {
     ...mapGetters({
-      getMergedHotels: "hotelModule/getMergedHotels"
+      getMergedHotels: "hotelModule/getMergedHotels",
+      getFormData: "hotelModule/getFormData"
     })
   },
   watch: {
@@ -61,18 +70,35 @@ export default {
       deep: true,
       handler: function(v) {
         console.log("Deep Watch Value", v);
+        console.log("Is Filtered On Created", this.filterOnCreated);
+        const { adult_size, child_size } = v;
+        if (this.filterOnCreated) {
+          console.log("Filter On Created");
+          this.filterHotels({ child_size, adult_size });
+        }
       }
     }
   },
   mounted() {
-    console.log("Refs", this.$refs.formRef.$children[0].validate());
+    console.log("Get Local Storage Data", this.getFormData);
+    if (this.getFormData !== null) {
+      const parsed = JSON.parse(this.getFormData);
+      const { data } = parsed["FORM_1"];
+      console.log("FORM 1 data", data);
+      this.formModel = data;
+      this.filterOnCreated = true;
+    }
   },
   methods: {
     ...mapActions({
       actionPushFiltered: "hotelModule/actionPushFiltered",
-      actionPushFormData: "hotelModule/actionPushFormData"
+      actionPushFormData: "hotelModule/actionPushFormData",
+      actionHotelSelected: "hotelModule/actionHotelSelected"
     }),
     filterHotels: function({ child_size, adult_size }) {
+      //When manually filtering/searching, disable filterOnCreated
+      //We don't want to call filterHotels back to back
+      this.filterOnCreated = false;
       //This disables items that does not match current conditions
       this.selectedItem = -1;
       this.$emit("hideButtons");
@@ -112,12 +138,19 @@ export default {
       // });
       this.actionPushFiltered(filteredHotels);
     },
-    returnFormData: function() {},
-    selectCard: function(i) {
+    validateHotelForm: function() {
+      if (!this.$refs.formRef.$refs.nestedRef.validate()) {
+        return false;
+      }
+      this.actionPushFormData({ data: this.formModel, type: "FORM_1" });
+      return true;
+    },
+    selectCard: function({ itemIndex, item }) {
       if (this.$refs.formRef.$refs.nestedRef.validate()) {
-        console.log("Card Clicked");
-        this.selectedItem = i;
-        this.$emit("showButtons");
+        console.log("Card Clicked", this.formModel);
+        this.selectedItem = itemIndex;
+        this.actionHotelSelected(item);
+        //this.$emit("cardSelected", item);
       }
     },
     showDetails: function(item) {

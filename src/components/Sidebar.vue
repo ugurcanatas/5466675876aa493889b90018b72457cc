@@ -20,7 +20,7 @@
           </div>
         </div>
       </div>
-      <MglMap
+      <!-- <MglMap
         class="map"
         :accessToken="ACCESS_TOKEN"
         mapStyle="mapbox://styles/mapbox/streets-v10"
@@ -31,12 +31,13 @@
         "
         :zoom="12"
       >
-      </MglMap>
+      </MglMap> -->
     </div>
   </div>
 </template>
 
 <script>
+/* eslint-disable */
 import Mapbox from "mapbox-gl";
 import { MglMap } from "vue-mapbox";
 export default {
@@ -92,46 +93,46 @@ export default {
 
 <style lang="sass">
 .sidebar-main
-    position: fixed
-    right: 0
-    top: 0
-    height: 100vh
-    width: 480px
-    background-color: #d6e7ff
-    z-index: 2
-    display: flex
-    flex-direction: column
-    transform: translateX(480px)
-    transition: transform 1s ease-in-out
-    &.show
-        transform: translateX(0px)
+  position: fixed
+  right: 0
+  top: 0
+  height: 100vh
+  width: 480px
+  background-color: #d6e7ff
+  z-index: 2
+  display: flex
+  flex-direction: column
+  transform: translateX(480px)
+  transition: transform 1s ease-in-out
+  &.show
+    transform: translateX(0px)
     &.hide
-        transform: translateX(480px)
+      transform: translateX(480px)
 
 .top-side
+  display: flex
+  flex-direction: column
+  width: 100%
+  position: absolute
+  z-index: 2
+  >.top-side-row
+    flex-direction: row
     display: flex
-    flex-direction: column
-    width: 100%
-    position: absolute
-    z-index: 2
-    >.top-side-row
-        flex-direction: row
-        display: flex
-        justify-content: space-between
-        padding: 16px
-        background-color: rgba(0, 0, 0, .25)
-        backdrop-filter: blur(5px)
+    justify-content: space-between
+    padding: 16px
+    background-color: rgba(0, 0, 0, .25)
+    backdrop-filter: blur(5px)
 
 .bottom-side
-    flex: 1
+  flex: 1
 
 .chip-item
-    background-color: #f0f6ff
-    border-radius: 8px
-    border: thin solid #2145c6
-    cursor: pointer
-    >p
-        color: #2145c6
-        font-size: .9em
-        font-weight: bold
+  background-color: #f0f6ff
+  border-radius: 8px
+  border: thin solid #2145c6
+  cursor: pointer
+  >p
+    color: #2145c6
+    font-size: .9em
+    font-weight: bold
 </style>

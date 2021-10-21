@@ -8,10 +8,17 @@
     <!-- make hairline css global -->
     <div class="hairline"></div>
     <hotels
+      v-if="currentCrumbIndex === 0"
       ref="hotelRef"
-      @showButtons="showButtons = true"
-      @hideButtons="showButtons = false"
       :hotelsWithDetails="isFiltered ? filteredHotels : hotelsWithDetails"
+    />
+    <details v-else-if="currentCrumbIndex === 1" />
+
+    <pagination-buttons
+      @nextForm="nextFormEvent"
+      @previousForm="previousFormEvent"
+      :show-buttons="showButtons"
+      :back-enabled="currentCrumbIndex === 0 ? false : true"
     />
   </v-container>
 </template>
@@ -21,12 +28,14 @@ import store from "../store/index";
 import { mapActions } from "vuex";
 import Crumbs from "../components/Crumbs.vue";
 import Hotels from "../components/Hotels.vue";
+import Details from "../components/DetailsView.vue";
 /*eslint-disable */
 export default {
   name: "Home",
   components: {
     Crumbs,
-    Hotels
+    Hotels,
+    Details
   },
   data() {
     return {
@@ -34,6 +43,7 @@ export default {
       hotels: [],
       hotelsWithDetails: [],
       filteredHotels: [],
+      selectedHotel: {},
       isFiltered: false,
       completedCrumbs: [0],
       currentCrumbIndex: 0,
@@ -96,6 +106,10 @@ export default {
           this.filteredHotels = payload;
           this.isFiltered = true;
           break;
+        case "hotelModule/setSelectedHotel":
+          this.selectedHotel = payload;
+          //this.currentCrumbIndex = 1;
+          break;
         default:
           break;
       }
@@ -108,7 +122,13 @@ export default {
       return res.json();
     },
     nextFormEvent: function() {
-      console.log("Hotel Ref", this.$refs.hotelRef);
+      if (
+        this.currentCrumbIndex === 0 &&
+        this.$refs.hotelRef.validateHotelForm()
+      ) {
+        console.log("Form is valid", this.$refs.hotelRef);
+        this.currentCrumbIndex++;
+      }
     },
     previousFormEvent: function() {}
   }

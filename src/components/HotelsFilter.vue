@@ -1,12 +1,12 @@
 <template>
   <div class="hotels-filter-wrapper">
+    {{ formModel }}
     <v-form v-model="validForm" ref="nestedRef">
       <v-row no-gutters>
         <v-select
           label="Adult size"
           v-model="formModel['adult_size']"
           :items="adultSizes"
-          @input="autoCompleteValidation"
           required
           :rules="[v => !!v || 'Adult size is required']"
         />
@@ -14,7 +14,6 @@
           label="Child size"
           v-model="formModel['child_size']"
           :items="childSizes"
-          @input="autoCompleteValidation"
           required
         />
         <v-dialog
@@ -54,6 +53,7 @@
           </template>
           <v-date-picker v-model="formModel['date_departure']"></v-date-picker>
         </v-dialog>
+        <v-btn @click="autoCompleteValidation">Search</v-btn>
       </v-row>
     </v-form>
   </div>
@@ -61,15 +61,15 @@
 
 <script>
 export default {
+  props: {
+    formModel: Object
+  },
   data() {
     return {
       childSizes: [0, 1, 2, 3, 4, 5],
       adultSizes: [1, 2, 3, 4, 5],
       validForm: true,
-      formModel: {
-        adult_size: 1,
-        child_size: 0
-      },
+
       dialogModel: {
         showArrival: false,
         showDeparture: false

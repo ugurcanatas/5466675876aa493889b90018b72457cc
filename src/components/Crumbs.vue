@@ -76,7 +76,7 @@ $base-button-hover-text: #3139F0
 .crumb
   @include breakpoint(mobile)
     font-size: .9em
-  transition: .2s cubic-bezier(.71,.7,.42,-0.14)
+  transition: .2s ease-in-out
   border-radius: 8px
   background-color: white
   clip-path: polygon(90% 0, 100% 50%, 90% 100%, 0% 100%, 10% 50%, 0% 0%)

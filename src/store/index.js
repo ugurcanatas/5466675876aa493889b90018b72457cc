@@ -10,6 +10,7 @@ const hotelModule = {
     mergedHotels: [],
     filteredHotels: [],
     isFiltered: false,
+    selectedHotel: {},
   }),
   getters: {
     getHotels: (state) => {
@@ -30,6 +31,9 @@ const hotelModule = {
     getFormData: () => {
       return localStorage.getItem("formData");
     },
+    getSelectedHotel: (state) => {
+      return state.selectedHotel;
+    },
   },
   mutations: {
     pushHotels: (state, payload) => {
@@ -48,7 +52,33 @@ const hotelModule = {
       state.isFiltered = payload;
     },
     pushFormData: (state, payload) => {
-      localStorage.setItem("formData", JSON.stringify(payload));
+      const { data, type } = payload;
+
+      const formData = localStorage.getItem("formData");
+      if (!formData) {
+        console.log("No Form Data Currently", formData);
+        localStorage.setItem(
+          "formData",
+          JSON.stringify({
+            [type]: {
+              data,
+            },
+          })
+        );
+      } else {
+        let parsedData = JSON.parse(formData);
+        console.log("There is a form data, lets parse it", parsedData);
+        parsedData = {
+          ...parsedData,
+          [type]: {
+            data,
+          },
+        };
+        localStorage.setItem("formData", JSON.stringify(parsedData));
+      }
+    },
+    setSelectedHotel: (state, payload) => {
+      state.selectedHotel = payload;
     },
   },
   actions: {
@@ -82,6 +112,9 @@ const hotelModule = {
     },
     actionPushFormData: ({ commit }, payload) => {
       commit("pushFormData", payload);
+    },
+    actionHotelSelected: ({ commit }, payload) => {
+      commit("setSelectedHotel", payload);
     },
   },
   //setting namespace to true so we don't get "unknown action type error" from Vue

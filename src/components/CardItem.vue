@@ -2,7 +2,7 @@
   <v-card
     active-class="none"
     :ripple="false"
-    @click="$emit('selectCard', itemIndex)"
+    @click="$emit('selectCard', { itemIndex, item })"
     :disabled="item.isDisabled"
     elevation="1"
     :class="
