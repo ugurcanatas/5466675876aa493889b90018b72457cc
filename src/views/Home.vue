@@ -4,8 +4,6 @@
     style="height: 100%"
   >
     <crumbs :crumbData="crumbData" :currentCrumbIndex="currentCrumbIndex" />
-    <!-- make hairline css global -->
-    <div class="hairline"></div>
     <hotels
       v-if="
         currentCrumbIndex === 0 &&
@@ -15,6 +13,7 @@
       :hotelsWithDetails="isFiltered ? filteredHotels : hotelsWithDetails"
     />
     <details-view
+      ref="detailsRef"
       v-else-if="currentCrumbIndex === 1"
       :selected-hotel="selectedHotel"
     />
@@ -25,6 +24,7 @@
       @previousForm="previousFormEvent"
       :show-buttons="showButtons"
       :back-enabled="currentCrumbIndex === 0 ? false : true"
+      :pagination="pagination"
     />
   </div>
 </template>
@@ -70,7 +70,13 @@ export default {
           prompt: "Preview & Payment"
         }
       ],
-      showButtons: false
+      showButtons: false,
+      pagination: {
+        paginationNextText: "Save & Continue",
+        paginationPrevText: "Back",
+        backDisabled: true,
+        nextDisabled: false
+      }
     };
   },
   beforeDestroy() {
@@ -93,6 +99,15 @@ export default {
       this.actionMerge(resolved);
     } catch (error) {
       console.log("Some Error", error);
+    }
+  },
+  watch: {
+    currentCrumbIndex: function(v) {
+      this.pagination = {
+        ...this.pagination,
+        backDisabled: v === 0,
+        paginationNextText: v !== 2 ? "Save & Continue" : "Make Payment"
+      };
     }
   },
   methods: {
@@ -136,7 +151,11 @@ export default {
       ) {
         console.log("Form is valid", this.$refs.hotelRef);
         this.currentCrumbIndex++;
-      } else if (this.currentCrumbIndex === 1) {
+      } else if (
+        this.currentCrumbIndex === 1 &&
+        this.$refs.detailsRef.validateDetailsForm()
+      ) {
+        console.log("Details Form Validated");
         this.currentCrumbIndex++;
       }
     },

@@ -1,11 +1,20 @@
 <template>
-  <div :class="`pagin-btns ${showButtons ? 'show-btn' : 'hide-btn'}`">
-    <button @click="$emit('previousForm')">
+  <div class="pagin-btns">
+    <v-btn
+      text
+      @click="$emit('previousForm')"
+      :disabled="pagination.backDisabled"
+    >
       <v-icon>mdi-chevron-left</v-icon>
-      Previous
-    </button>
-    <v-btn @click="$emit('nextForm')">
-      Next
+      {{ pagination.paginationPrevText }}
+    </v-btn>
+    <v-btn
+      color="#3139F0"
+      class="white--text"
+      @click="$emit('nextForm')"
+      :disabled="pagination.nextDisabled"
+    >
+      {{ pagination.paginationNextText }}
       <v-icon color="white">mdi-chevron-right</v-icon>
     </v-btn>
   </div>
@@ -16,7 +25,8 @@ export default {
   props: {
     showButtons: Boolean,
     backEnabled: Boolean,
-    nextEnabled: Boolean
+    nextEnabled: Boolean,
+    pagination: Object
   }
 };
 </script>

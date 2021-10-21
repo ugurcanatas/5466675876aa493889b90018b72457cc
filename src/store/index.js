@@ -30,6 +30,7 @@ const hotelModule = {
     },
     getFormData: () => {
       const parsedStorage = JSON.parse(localStorage.getItem("formData"));
+      console.log("Parsed Storage", parsedStorage);
       return parsedStorage !== null ? parsedStorage : null;
     },
     getSelectedHotel: (state) => {

@@ -152,6 +152,7 @@ export default {
       ) {
         return false;
       }
+      localStorage.getItem("formData") && localStorage.removeItem("formData");
       this.actionPushFormData({ data: this.formModel, type: "FORM_1" });
       return true;
     },

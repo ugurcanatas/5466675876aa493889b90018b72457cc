@@ -42,9 +42,11 @@
           class="pa-4"
         >
           <v-card
-            @click="selectedRoomType = i"
+            @click="selectRoom(i, item)"
             :class="
-              `flex-item-card pa-0 ${selectedRoomType === i ? 'selected' : ''}`
+              `flex-item-card pa-0 ${
+                room_type && room_type.id === item.id ? 'selected' : ''
+              }`
             "
           >
             <img :src="item.photo" class="img-room" />
@@ -68,10 +70,10 @@
           class="pa-4"
         >
           <v-card
-            @click="selectedRoomScenic = i"
+            @click="selectView(i, item)"
             :class="
               `flex-item-card pa-0 ${
-                selectedRoomScenic === i ? 'selected' : ''
+                room_scenic && room_scenic.id === item.id ? 'selected' : ''
               }`
             "
           >
@@ -100,8 +102,10 @@ export default {
   data() {
     return {
       //default is 0
-      selectedRoomType: 0,
-      selectedRoomScenic: 0
+      selectedRoomType: -1,
+      selectedRoomScenic: -1,
+      room_type: null,
+      room_scenic: null
     };
   },
   computed: {
@@ -109,24 +113,61 @@ export default {
       getFormData: "hotelModule/getFormData"
     })
   },
-  created() {},
+  created() {
+    const formData = JSON.parse(localStorage.getItem("formData"));
+    console.log("DETAILS CREATED CALL", this.getFormData["FORM_2"]);
+    if (formData["FORM_2"]) {
+      const {
+        data: { room_scenic, room_type }
+      } = formData["FORM_2"];
+      console.log("FORM 2 data", formData["FORM_2"]);
+      this.room_type = room_type;
+      this.room_scenic = room_scenic;
+    }
+  },
   methods: {
     ...mapActions({
       actionPushFormData: "hotelModule/actionPushFormData"
     }),
     calculatePrice: function() {
+      if (this.selectedRoomScenic === -1 || this.selectedRoomType === -1) {
+        return 0;
+      }
       const {
         FORM_1: {
           data: { adult_size }
         }
       } = this.getFormData;
       const { room_type, room_scenic } = this.selectedHotel;
+      console.log("SELECTED HOTEL", this.selectedHotel);
       let room_price = room_type[this.selectedRoomType]["price"] * adult_size;
       const { price_rate } = room_scenic[this.selectedRoomScenic];
       console.log("Room price", room_price);
       console.log("Room price", price_rate);
       room_price += (room_price * price_rate) / 100;
       return room_price;
+    },
+    validateDetailsForm: function() {
+      if (this.selectedRoomScenic === -1 || this.selectedRoomType === -1) {
+        return false;
+      }
+      this.actionPushFormData({
+        data: {
+          room_type: this.room_type,
+          room_scenic: this.room_scenic,
+          price: this.calculatePrice()
+        },
+        type: "FORM_2"
+      });
+      return true;
+    },
+    selectRoom: function(i, item) {
+      this.selectedRoomType = i;
+      this.room_type = item;
+    },
+    selectView: function(i, item) {
+      this.selectedRoomScenic = i;
+      this.room_scenic = item;
     }
   }
 };
