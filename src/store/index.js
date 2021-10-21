@@ -29,7 +29,8 @@ const hotelModule = {
       return state.isFiltered;
     },
     getFormData: () => {
-      return localStorage.getItem("formData");
+      const parsedStorage = JSON.parse(localStorage.getItem("formData"));
+      return parsedStorage !== null ? parsedStorage : null;
     },
     getSelectedHotel: (state) => {
       return state.selectedHotel;

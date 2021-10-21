@@ -1,0 +1,60 @@
+{
+    "id": "3",
+    "hotel_id": 3,
+    "city": "Antalya",
+    "possibilities": [
+        "Kapalı Yüzme Havuzu",
+        "Açık Yüzme Havuzu",
+        "Masaj",
+        "Özel Plaj",
+        "Fitness Center"
+    ],
+    "max_adult_size": 8,
+    "child_status": true,
+    "room_type": [
+        {
+            "id": 1,
+            "title": "Standart",
+            "description": "Aliquam dapibus dictum massa, eget rhoncus sapien sodales vel. Duis ultrices ligula lectus, molestie ullamcorper velit finibus sed.",
+            "photo": "https://teknasyon-mailling.s3.eu-central-1.amazonaws.com/challenge/frontend/img/3-standart.jpg",
+            "price": 559
+        },
+        {
+            "id": 2,
+            "title": "Deluxe",
+            "description": "Quisque ex ipsum, fringilla sit amet pharetra a, vestibulum vitae ligula. Maecenas rhoncus sapien nisl, in vehicula nisl vestibulum ultrices.",
+            "photo": "https://teknasyon-mailling.s3.eu-central-1.amazonaws.com/challenge/frontend/img/3-deluxe.jpg",
+            "price": 699
+        },
+        {
+            "id": 4,
+            "title": "Suit",
+            "description": "Suspendisse dignissim mauris elit. Sed hendrerit est eget lectus eleifend suscipit. Etiam eu nulla hendrerit, aliquet purus vel, volutpat diam.",
+            "photo": "https://teknasyon-mailling.s3.eu-central-1.amazonaws.com/challenge/frontend/img/1-suit.jpg",
+            "price": 2012
+        }
+    ],
+    "room_scenic": [
+        {
+            "id": 1,
+            "title": "Kara Manzaralı",
+            "photo": "https://teknasyon-mailling.s3.eu-central-1.amazonaws.com/challenge/frontend/img/land-view.jpg",
+            "price_rate": 1
+        },
+        {
+            "id": 2,
+            "title": "Havuz Manzaralı",
+            "photo": "https://teknasyon-mailling.s3.eu-central-1.amazonaws.com/challenge/frontend/img/pool-view.jpg",
+            "price_rate": 12
+        },
+        {
+            "id": 3,
+            "title": "Deniz Manzaralı",
+            "photo": "https://teknasyon-mailling.s3.eu-central-1.amazonaws.com/challenge/frontend/img/sea-view.jpg",
+            "price_rate": 37
+        }
+    ],
+    "hotel_name": "Dela Hotel",
+    "rating": "3.0",
+    "isDisabled": false
+}

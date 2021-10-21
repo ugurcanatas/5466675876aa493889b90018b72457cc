@@ -18,7 +18,7 @@ export default {
   })
 };
 </script>
-<style>
+<style >
 /* @import url("https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,400;0,500;1,700;1,900&display=swap"); */
 @import url("https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@400;600;700;900&display=swap");
 

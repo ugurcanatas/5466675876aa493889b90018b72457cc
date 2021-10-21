@@ -7,6 +7,7 @@
           label="Adult size"
           v-model="formModel['adult_size']"
           :items="adultSizes"
+          @input="autoCompleteValidation"
           required
           :rules="[v => !!v || 'Adult size is required']"
         />
@@ -14,6 +15,7 @@
           label="Child size"
           v-model="formModel['child_size']"
           :items="childSizes"
+          @input="autoCompleteValidation"
           required
         />
         <v-dialog

@@ -1,18 +1,23 @@
 <template>
-  <v-container
-    fluid
-    fill-height
+  <div
     class="justify-space-between align-self-stretch d-flex flex-column pa-0"
+    style="height: 100%"
   >
     <crumbs :crumbData="crumbData" :currentCrumbIndex="currentCrumbIndex" />
     <!-- make hairline css global -->
     <div class="hairline"></div>
     <hotels
-      v-if="currentCrumbIndex === 0"
+      v-if="
+        currentCrumbIndex === 0 &&
+          (filteredHotels.length > 0 || hotelsWithDetails.length > 0)
+      "
       ref="hotelRef"
       :hotelsWithDetails="isFiltered ? filteredHotels : hotelsWithDetails"
     />
-    <details v-else-if="currentCrumbIndex === 1" />
+    <details-view
+      v-else-if="currentCrumbIndex === 1"
+      :selected-hotel="selectedHotel"
+    />
 
     <pagination-buttons
       @nextForm="nextFormEvent"
@@ -20,22 +25,22 @@
       :show-buttons="showButtons"
       :back-enabled="currentCrumbIndex === 0 ? false : true"
     />
-  </v-container>
+  </div>
 </template>
 
 <script>
 import store from "../store/index";
 import { mapActions } from "vuex";
 import Crumbs from "../components/Crumbs.vue";
-import Hotels from "../components/Hotels.vue";
-import Details from "../components/DetailsView.vue";
+import Hotels from "../components/Step1/Hotels.vue";
+import DetailsView from "../components/DetailsView.vue";
 /*eslint-disable */
 export default {
   name: "Home",
   components: {
     Crumbs,
     Hotels,
-    Details
+    DetailsView
   },
   data() {
     return {
@@ -51,15 +56,15 @@ export default {
       crumbData: [
         {
           icon: "mdi-calendar",
-          prompt: "Otel ve tarih seçimi"
+          prompt: "Select Hotel & Date"
         },
         {
           icon: "mdi-bed",
-          prompt: "Otel tipi ve manzara"
+          prompt: "Hotel & View Type"
         },
         {
           icon: "mdi-credit-card",
-          prompt: "Önizleme ve ödeme"
+          prompt: "Preview & Payment"
         }
       ],
       showButtons: false
@@ -128,9 +133,13 @@ export default {
       ) {
         console.log("Form is valid", this.$refs.hotelRef);
         this.currentCrumbIndex++;
+      } else if (this.currentCrumbIndex === 1) {
+        this.currentCrumbIndex++;
       }
     },
-    previousFormEvent: function() {}
+    previousFormEvent: function() {
+      this.currentCrumbIndex !== 0 && this.currentCrumbIndex--;
+    }
   }
 };
 </script>

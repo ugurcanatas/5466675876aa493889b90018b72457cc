@@ -1,5 +1,5 @@
 <template>
-  <div class="fixed-toolbar px-6 py-4">
+  <div class="fixed-toolbar px-6 py-1">
     <div class="pa-0">
       <picture>
         <source :srcset="requireLogo" media="(min-width: 1000px)" />

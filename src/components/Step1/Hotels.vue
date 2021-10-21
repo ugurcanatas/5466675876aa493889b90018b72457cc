@@ -31,7 +31,7 @@
 </template>
 
 <script>
-import HotelsFilter from "../components/HotelsFilter.vue";
+import HotelsFilter from "./HotelsFilter.vue";
 import { mapActions, mapGetters } from "vuex";
 import CardItem from "./CardItem.vue";
 
@@ -66,24 +66,31 @@ export default {
     })
   },
   watch: {
+    /**
+     * When created lifecycle gets called, we are setting the formModel prop
+     * but updated data does not trigger input events in HotelsFilter component.
+     * In order to get around this issue, let's deep watch the formModel object and
+     * whenever formModel updates on first created lifecycle, we are going to call our filter method,
+     * thus we will achive default filter on refresh or returning to the previous form component.
+     */
     formModel: {
       deep: true,
       handler: function(v) {
-        console.log("Deep Watch Value", v);
-        console.log("Is Filtered On Created", this.filterOnCreated);
         const { adult_size, child_size } = v;
         if (this.filterOnCreated) {
-          console.log("Filter On Created");
           this.filterHotels({ child_size, adult_size });
         }
       }
     }
   },
-  mounted() {
-    console.log("Get Local Storage Data", this.getFormData);
+  created() {
+    /**
+     * If we have a stored form data on localStorage, let's extract and parse it first
+     * and then pass it to the formModel prop on HotelsFilter component in order to
+     * return to the last saved state
+     */
     if (this.getFormData !== null) {
-      const parsed = JSON.parse(this.getFormData);
-      const { data } = parsed["FORM_1"];
+      const { data } = this.getFormData["FORM_1"];
       console.log("FORM 1 data", data);
       this.formModel = data;
       this.filterOnCreated = true;
@@ -139,7 +146,10 @@ export default {
       this.actionPushFiltered(filteredHotels);
     },
     validateHotelForm: function() {
-      if (!this.$refs.formRef.$refs.nestedRef.validate()) {
+      if (
+        !this.$refs.formRef.$refs.nestedRef.validate() ||
+        this.selectedItem === -1
+      ) {
         return false;
       }
       this.actionPushFormData({ data: this.formModel, type: "FORM_1" });

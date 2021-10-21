@@ -3,7 +3,7 @@ import App from "./App.vue";
 import router from "./router";
 import store from "./store";
 import FixedToolbar from "./components/FixedToolbar";
-import Sidebar from "./components/Sidebar";
+import Sidebar from "./components/Step1/Sidebar";
 import PaginationButtons from "./components/PaginationButtons";
 import vuetify from "./plugins/vuetify";
 
