@@ -38,7 +38,10 @@
               :rules="[v => !!v || 'Arrival date is required']"
             />
           </template>
-          <v-date-picker v-model="formModel['start_date']"></v-date-picker>
+          <v-date-picker
+            :min="isoMinDate"
+            v-model="formModel['start_date']"
+          ></v-date-picker>
         </v-dialog>
 
         <v-dialog
@@ -58,7 +61,10 @@
               :rules="[v => !!v || 'Departure date is required']"
             />
           </template>
-          <v-date-picker v-model="formModel['end_date']"></v-date-picker>
+          <v-date-picker
+            :min="isoMinDate"
+            v-model="formModel['end_date']"
+          ></v-date-picker>
         </v-dialog>
         <!-- <v-btn @click="autoCompleteValidation">Search</v-btn> -->
       </v-row>
@@ -76,7 +82,9 @@ export default {
       childSizes: [0, 1, 2, 3, 4, 5],
       adultSizes: [1, 2, 3, 4, 5],
       validForm: true,
-
+      isoMinDate: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10),
       dialogModel: {
         showArrival: false,
         showDeparture: false

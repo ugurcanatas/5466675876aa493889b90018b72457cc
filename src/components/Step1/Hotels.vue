@@ -204,6 +204,10 @@ $rating-high: #48E073
   top: 0
   z-index: 2
   background-color: white
+  @include breakpoint(small)
+    position: relative
+  @include breakpoint(mobile)
+    position: relative
 
 .hotel-card
   background-color: white

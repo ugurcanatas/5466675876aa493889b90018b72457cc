@@ -1,7 +1,7 @@
 <template>
   <div class="middle-container align-self-stretch flex-grow-1 ">
-    <div style="height:100%; display:flex; flex-direction:row;" no-gutters>
-      <div style="flex:1">
+    <div class="payment-col-container" no-gutters>
+      <div class="left-hand-side">
         <div style="display:flex; justify-content:center">
           <div class="credit-card pa-2">
             <div class="default-row">
@@ -54,7 +54,7 @@
             </div>
           </div>
         </div>
-        <div class="py-4 px-16 flex-1">
+        <div class="py-4 flex-1">
           <h2 class="default-header py-2 hairline bottom">
             Card Information
           </h2>
@@ -363,18 +363,31 @@ $default_font: 'Inconsolata', monospace
 .middle-container
     overflow-y: scroll
 
+.payment-col-container
+    height: 100%
+    display: flex
+    flex-direction: row
+    @include breakpoint(mobile)
+        flex-direction: column
+    @include breakpoint(small)
+        flex-direction: column
+
 .credit-card
     width: 300px
     height: 178px
     background-size: 100%
     background-image: url("~@/assets/sample-card.png")
     border-radius: 8px
-    margin: 12px 64px
+    padding: 12px 64px
     display: flex
     flex-direction: column
     justify-content: space-between
     // box-shadow: 0px 0px 10px 5px rgba(255,74,155,0.25)
     box-shadow: 0px 0px 20px 3px rgba(49,57,240,0.3)
+    @include breakpoint(mobile)
+        padding: 16px 16px
+    @include breakpoint(small)
+        padding: 16px 16px
 
 .default-row
     display: flex
@@ -427,10 +440,22 @@ $default_font: 'Inconsolata', monospace
         background-size: 100%
         background-position: center
 
+.left-hand-side
+    flex: 1
+    padding: 16px 64px
+    @include breakpoint(mobile)
+        padding: 16px 16px
+    @include breakpoint(small)
+        padding: 16px 16px
+
 .right-hand-side
     background-color: #f7f8ff
     padding: 16px 64px
     display: flex
     flex-direction: column
     flex: 1
+    @include breakpoint(mobile)
+        padding: 16px 16px
+    @include breakpoint(small)
+        padding: 16px 16px
 </style>

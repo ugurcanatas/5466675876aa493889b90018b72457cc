@@ -292,4 +292,8 @@ export default {
   top: 0
   background: white
   z-index: 2
+  @include breakpoint(small)
+    position: relative
+  @include breakpoint(mobile)
+    position: relative
 </style>
