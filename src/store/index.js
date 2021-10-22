@@ -13,6 +13,10 @@ const hotelModule = {
     selectedHotel: {},
     fullPreview: {},
     reservation: {},
+    appStates: {
+      type: "",
+      message: "",
+    },
   }),
   getters: {
     getHotels: (state) => {
@@ -43,6 +47,9 @@ const hotelModule = {
     },
     getReservation: (state) => {
       return state.reservation;
+    },
+    getAppStates: (state) => {
+      return state.appStates;
     },
   },
   mutations: {
@@ -101,6 +108,9 @@ const hotelModule = {
       state.reservation = {};
       state.fullPreview = {};
     },
+    setAppState: (state, payload) => {
+      state.appStates = payload;
+    },
   },
   actions: {
     actionPushHotels: ({ commit }, payload) => {
@@ -145,6 +155,9 @@ const hotelModule = {
     },
     actionClear: ({ commit }) => {
       commit("reset");
+    },
+    actionSetAppState: ({ commit }, payload) => {
+      commit("setAppState", payload);
     },
   },
   //setting namespace to true so we don't get "unknown action type error" from Vue

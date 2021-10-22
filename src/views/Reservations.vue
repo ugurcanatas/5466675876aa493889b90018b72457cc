@@ -1,5 +1,8 @@
 <template>
   <div>
+    <v-col>
+      <full-preview />
+    </v-col>
     <div class="default-row">
       <v-btn @click="newReservation()" color="green"
         >Make a new reservation</v-btn
@@ -16,8 +19,12 @@
 
 <script>
 import { mapActions, mapGetters } from "vuex";
+import FullPreview from "../components/FullPreview.vue";
 export default {
   name: "Reservations",
+  components: {
+    FullPreview
+  },
   data() {
     return {
       reservationId: -1
@@ -28,19 +35,10 @@ export default {
       getReservation: "hotelModule/getReservation"
     })
   },
-  async created() {
-    // const { id } = this.$route.params.reservation;
-    // console.log("Reservation param id", this.$route.params.reservation, id);
-    // this.reservationId = id;
-    // try {
-    //   fetch("", {
-    //     method: "POST"
-    //   });
-    // } catch (error) {}
-  },
   methods: {
     ...mapActions({
-      resetToStart: "hotelModule/actionClear"
+      resetToStart: "hotelModule/actionClear",
+      actionSetAppState: "hotelModule/actionSetAppState"
     }),
     newReservation: function() {
       this.resetToStart()
@@ -65,9 +63,25 @@ export default {
         const deleteResult = await deleteResponse.json();
         console.log("DELETE RESULT", deleteResult);
         if (deleteResult) {
-          this.newReservation();
+          this.resetToStart()
+            .then(() => {
+              this.actionSetAppState({
+                type: "success",
+                message: "Your reservation has been cancelled"
+              });
+            })
+            .catch(err => {
+              throw Error(err);
+            })
+            .finally(() => {
+              this.$router.replace("/");
+            });
         }
       } catch (error) {
+        this.actionSetAppState({
+          type: "error",
+          message: "An error occured"
+        });
         throw Error(error);
       }
 

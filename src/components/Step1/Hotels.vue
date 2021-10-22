@@ -97,6 +97,7 @@ export default {
       this.formModel = data;
       this.filterOnCreated = true;
     } else {
+      console.log("There is no form data");
       this.formModel = {};
     }
   },

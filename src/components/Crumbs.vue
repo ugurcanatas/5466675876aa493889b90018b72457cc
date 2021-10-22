@@ -39,19 +39,6 @@ export default {
 </script>
 
 <style lang="sass" scoped>
-$crumbs-bg: #C2C4ED
-$crumbs-active: #3139F0
-$base-button-hover: #BBFFA4
-$base-button-hover-text: #3139F0
-
-@mixin breakpoint($width)
-  @if $width == mobile
-    @media (max-width: 600px)
-      @content
-  @else if $width == small
-    @media (max-width:900px)
-      @content
-
 .crumb-wrapper
   display: flex
   flex-direction: row

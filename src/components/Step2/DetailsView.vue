@@ -195,23 +195,6 @@ export default {
 </script>
 
 <style lang="sass">
-@mixin breakpoint($width)
-  @if $width == mobile
-    @media (max-width: 600px)
-      @content
-  @else if $width == small
-    @media (min-width:600px) and (max-width:960px)
-      @content
-  @else if $width == medium
-    @media (min-width:960px) and (max-width:1264px)
-      @content
-  @else if $width == large
-    @media (min-width:1264px) and (max-width:1904px)
-      @content
-  @else if $width == xlarge
-    @media (min-width:1904px)
-      @content
-
 .middle-container
   overflow-y: scroll
 

@@ -1,0 +1,25 @@
+$crumbs-bg: #C2C4ED
+$crumbs-active: #3139F0
+$base-button-hover: #BBFFA4
+$base-button-hover-text: #3139F0
+
+$snackbar-neutural: #3139F0
+$snackbar-success: #28a745
+$snackbar-error: #B00020
+
+@mixin breakpoint($width)
+  @if $width == mobile
+    @media (max-width: 600px)
+      @content
+  @else if $width == small
+    @media (min-width:600px) and (max-width:960px)
+      @content
+  @else if $width == medium
+    @media (min-width:960px) and (max-width:1264px)
+      @content
+  @else if $width == large
+    @media (min-width:1264px) and (max-width:1904px)
+      @content
+  @else if $width == xlarge
+    @media (min-width:1904px)
+      @content

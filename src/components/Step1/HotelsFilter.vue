@@ -1,8 +1,9 @@
 <template>
   <div class="hotels-filter-wrapper">
     <v-form v-model="validForm" ref="nestedRef">
-      <v-row no-gutters>
+      <v-row no-gutters class="justify-space-around">
         <v-select
+          class="px-4"
           label="Adult size"
           v-model="formModel['adult']"
           :items="adultSizes"
@@ -10,13 +11,16 @@
           required
           :rules="[v => !!v || 'Adult size is required']"
         />
+
         <v-select
+          class="px-4"
           label="Child size"
           v-model="formModel['child']"
           :items="childSizes"
           @input="autoCompleteValidation"
           required
         />
+
         <v-dialog
           width="290px"
           transition="scale-transition"
@@ -25,6 +29,7 @@
         >
           <template v-slot:activator="{ on }">
             <v-text-field
+              class="px-4"
               label="Pick an arrival date"
               v-model="formModel['start_date']"
               v-on="on"
@@ -44,6 +49,7 @@
         >
           <template v-slot:activator="{ on }">
             <v-text-field
+              class="px-4"
               label="Pick a departure date"
               v-model="formModel['end_date']"
               v-on="on"
@@ -54,7 +60,7 @@
           </template>
           <v-date-picker v-model="formModel['end_date']"></v-date-picker>
         </v-dialog>
-        <v-btn @click="autoCompleteValidation">Search</v-btn>
+        <!-- <v-btn @click="autoCompleteValidation">Search</v-btn> -->
       </v-row>
     </v-form>
   </div>

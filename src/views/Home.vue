@@ -114,7 +114,8 @@ export default {
     ...mapActions({
       actionPushHotels: "hotelModule/actionPushHotels",
       actionPushHotelsWithDetails: "hotelModule/actionPushHotelsWithDetails",
-      actionMerge: "hotelModule/actionMerge"
+      actionMerge: "hotelModule/actionMerge",
+      actionSetAppState: "hotelModule/actionSetAppState"
     }),
     subscribeHandler: function({ type, payload }) {
       console.log("Listening store events", type, payload);
@@ -145,12 +146,13 @@ export default {
       return res.json();
     },
     nextFormEvent: function() {
-      if (
-        this.currentCrumbIndex === 0 &&
+      if (this.currentCrumbIndex === 0) {
         this.$refs.hotelRef.validateHotelForm()
-      ) {
-        console.log("Form is valid", this.$refs.hotelRef);
-        this.currentCrumbIndex++;
+          ? this.currentCrumbIndex++
+          : this.actionSetAppState({
+              type: "error",
+              message: "Please fill out all required fields"
+            });
       } else if (
         this.currentCrumbIndex === 1 &&
         this.$refs.detailsRef.validateDetailsForm()
