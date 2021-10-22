@@ -101,6 +101,9 @@ export default {
       this.formModel = {};
     }
   },
+  mounted() {
+    console.log("ON MOUNTED GET FORM DATA", this.getFormData);
+  },
   methods: {
     ...mapActions({
       actionPushFiltered: "hotelModule/actionPushFiltered",

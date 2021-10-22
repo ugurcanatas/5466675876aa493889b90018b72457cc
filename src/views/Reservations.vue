@@ -36,16 +36,19 @@ export default {
   methods: {
     ...mapActions({
       resetToStart: "hotelModule/actionClear",
-      actionSetAppState: "hotelModule/actionSetAppState"
+      actionSetAppState: "hotelModule/actionSetAppState",
+      actionSetActionType: "hotelModule/actionSetActionType"
     }),
     newReservation: function() {
+      this.actionSetActionType("NEW");
       this.resetToStart()
         .then(() => this.$router.replace("/"))
         .catch(() => console.log("Error when removing"));
     },
     updateReservation: function() {
-      //implement update
-      this.$router.push("/");
+      this.actionSetActionType("UPDATE")
+        .then(() => this.$router.replace("/"))
+        .catch(() => console.log("Error when updating"));
     },
     deleteReservation: async function() {
       const { id } = this.getReservation;
@@ -76,6 +79,7 @@ export default {
               throw Error(err);
             })
             .finally(() => {
+              this.actionSetActionType("NEW");
               this.$router.replace("/");
             });
         }

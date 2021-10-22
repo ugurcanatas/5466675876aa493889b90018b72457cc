@@ -49,9 +49,7 @@ export default {
   },
 
   data() {
-    return {
-      staticMap: require("@/assets/staticmap.jpeg")
-    };
+    return {};
   },
   methods: {
     emitCloseEvent: function() {

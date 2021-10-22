@@ -239,7 +239,9 @@ export default {
   },
   computed: {
     ...mapGetters({
-      getFullPreview: "hotelModule/getFullPreview"
+      getFullPreview: "hotelModule/getFullPreview",
+      getActionType: "hotelModule/getActionType",
+      getReservation: "hotelModule/getReservation"
     }),
     getTotalStay: function() {
       return (
@@ -251,14 +253,17 @@ export default {
   },
   methods: {
     ...mapActions({
-      actionSetReservation: "hotelModule/actionSetReservation"
+      actionSetReservation: "hotelModule/actionSetReservation",
+      actionSetAppState: "hotelModule/actionSetAppState"
     }),
+    updateReservation: async function() {},
     validatePaymentForm: async function() {
       console.log(
         "Validate Payment Called",
         this.formModel,
         this.$refs.paymentForm.validate(),
-        this.getFullPreview
+        this.getFullPreview,
+        this.getActionType
       );
       if (!this.$refs.paymentForm.validate()) {
         return false;
@@ -292,16 +297,26 @@ export default {
       console.log("Full Data", body);
       try {
         const postresponse = await fetch(
-          process.env.VUE_APP_ENDPOINT_RESERVATIONS,
+          this.getActionType === "UPDATE"
+            ? `${process.env.VUE_APP_ENDPOINT_RESERVATION_SINGLE}${this.getReservation.id}`
+            : process.env.VUE_APP_ENDPOINT_RESERVATIONS,
           {
-            method: "POST",
+            method: this.getActionType === "UPDATE" ? "PUT" : "POST",
             body: JSON.stringify(body)
           }
         );
 
         const reservation = await postresponse.json();
         console.log("Reservation response", reservation);
-        this.actionSetReservation(reservation);
+        this.actionSetReservation(reservation).then(() => {
+          this.actionSetAppState({
+            type: "success",
+            message:
+              this.getActionType === "UPDATE"
+                ? "Your reservation has been updated"
+                : "Reservation created successfully"
+          });
+        });
         this.$router.replace({
           name: "Reservations",
           params: {
@@ -310,6 +325,10 @@ export default {
         });
         //return
       } catch (error) {
+        this.actionSetAppState({
+          type: "error",
+          message: "An error occured"
+        });
         return false;
       }
     },
