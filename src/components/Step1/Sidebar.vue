@@ -20,26 +20,20 @@
           </div>
         </div>
       </div>
-      <!-- <MglMap
-        class="map"
-        :accessToken="ACCESS_TOKEN"
-        mapStyle="mapbox://styles/mapbox/streets-v10"
-        :center="
-          showSidebar
-            ? coordinates.filter(v => v.city === singleHotelInfo.city)[0].coords
-            : [0, 0]
-        "
-        :zoom="12"
-      >
-      </MglMap> -->
+      <div style="height: 100%;">
+        <iframe
+          width="100%"
+          height="100%"
+          src="https://api.mapbox.com/styles/v1/telixtelemetry/ckv2valyl445f14o3uwgxbvai.html?title=false&access_token=pk.eyJ1IjoidGVsaXh0ZWxlbWV0cnkiLCJhIjoiY2t2MnY4c2JwMGNhbjJ1bzAzcGMwbmlsbiJ9.H697GUCGTUOv2e_a7iAmFw&zoomwheel=false#12/48.8665/2.3176"
+          title="Basic"
+          style="border:none;"
+        ></iframe>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-/* eslint-disable */
-import Mapbox from "mapbox-gl";
-import { MglMap } from "vue-mapbox";
 export default {
   props: {
     singleHotelInfo: {
@@ -52,35 +46,10 @@ export default {
       default: false
     }
   },
-  components: {
-    MglMap
-  },
+
   data() {
     return {
-      ACCESS_TOKEN: process.env.VUE_APP_MAPBOX_KEY,
-      mapbox: Mapbox,
-      coordinates: [
-        {
-          city: "İstanbul",
-          coords: [29.05508, 40.988939] // should be lng lat for mapbox
-        },
-        {
-          city: "Antalya",
-          coords: [30.854402, 36.86359] // should be lng lat for mapbox
-        },
-        {
-          city: "İzmir",
-          coords: [26.350493, 38.301292] // should be lng lat for mapbox
-        },
-        {
-          city: "Muğla",
-          coords: [27.395264, 37.033186] // should be lng lat for mapbox
-        },
-        {
-          city: "Çanakkale",
-          coords: [26.465388, 40.326606] // should be lng lat for mapbox
-        }
-      ]
+      staticMap: require("@/assets/staticmap.jpeg")
     };
   },
   methods: {
@@ -104,6 +73,12 @@ export default {
   flex-direction: column
   transform: translateX(480px)
   transition: transform 1s ease-in-out
+  @include breakpoint(mobile)
+    width: 100%
+    transform: translateX(100%)
+  @include breakpoint(small)
+    width: 100%
+    transform: translateX(100%)
   &.show
     transform: translateX(0px)
     &.hide

@@ -7,7 +7,6 @@
         <img width="36px" :srcset="requireLogo" />
       </picture>
     </div>
-    <div>Search Bar</div>
   </div>
 </template>
 
