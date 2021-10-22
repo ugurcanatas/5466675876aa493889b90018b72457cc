@@ -5,7 +5,7 @@
       <v-row no-gutters>
         <v-select
           label="Adult size"
-          v-model="formModel['adult_size']"
+          v-model="formModel['adult']"
           :items="adultSizes"
           @input="autoCompleteValidation"
           required
@@ -13,7 +13,7 @@
         />
         <v-select
           label="Child size"
-          v-model="formModel['child_size']"
+          v-model="formModel['child']"
           :items="childSizes"
           @input="autoCompleteValidation"
           required
@@ -27,14 +27,14 @@
           <template v-slot:activator="{ on }">
             <v-text-field
               label="Pick an arrival date"
-              v-model="formModel['date_arrival']"
+              v-model="formModel['start_date']"
               v-on="on"
               readonly
               prepend-icon="mdi-calendar"
               :rules="[v => !!v || 'Arrival date is required']"
             />
           </template>
-          <v-date-picker v-model="formModel['date_arrival']"></v-date-picker>
+          <v-date-picker v-model="formModel['start_date']"></v-date-picker>
         </v-dialog>
 
         <v-dialog
@@ -46,14 +46,14 @@
           <template v-slot:activator="{ on }">
             <v-text-field
               label="Pick a departure date"
-              v-model="formModel['date_departure']"
+              v-model="formModel['end_date']"
               v-on="on"
               readonly
               prepend-icon="mdi-calendar"
               :rules="[v => !!v || 'Departure date is required']"
             />
           </template>
-          <v-date-picker v-model="formModel['date_departure']"></v-date-picker>
+          <v-date-picker v-model="formModel['end_date']"></v-date-picker>
         </v-dialog>
         <v-btn @click="autoCompleteValidation">Search</v-btn>
       </v-row>
@@ -94,8 +94,8 @@ export default {
   methods: {
     autoCompleteValidation: function() {
       this.$emit("limitChecker", {
-        child_size: this.formModel["child_size"],
-        adult_size: this.formModel["adult_size"]
+        child_size: this.formModel["child"],
+        adult_size: this.formModel["adult"]
       });
     }
   }
@@ -104,5 +104,5 @@ export default {
 
 <style lang="sass">
 .hotels-filter-wrapper
-    padding: 16px
+  padding: 16px
 </style>

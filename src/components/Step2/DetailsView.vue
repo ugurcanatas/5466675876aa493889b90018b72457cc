@@ -5,10 +5,10 @@
         <h2 class="default-header small text-center text-sm-start">Between:</h2>
         <v-row no-gutters class="mb-4 justify-center justify-sm-start">
           <div class="date-tag mr-2">
-            <span>{{ getFormData["FORM_1"].data.date_arrival }}</span>
+            <span>{{ getFormData["FORM_1"].data.start_date }}</span>
           </div>
           <div class="date-tag ml-2">
-            <span>{{ getFormData["FORM_1"].data.date_departure }}</span>
+            <span>{{ getFormData["FORM_1"].data.end_date }}</span>
           </div>
         </v-row>
         <v-row no-gutters class="align-center justify-center justify-sm-start">
@@ -20,15 +20,15 @@
       <v-col class="col-sm-6 col-12">
         <v-row no-gutters class="justify-center justify-sm-end">
           <span class="info-text mr-2"
-            >{{ getFormData["FORM_1"].data.adult_size }}x adults</span
+            >{{ getFormData["FORM_1"].data.adult }}x adults</span
           >
           <span class="info-text ml-2"
-            >{{ getFormData["FORM_1"].data.child_size }}x children</span
+            >{{ getFormData["FORM_1"].data.child }}x children</span
           >
         </v-row>
         <div class="my-2" />
         <v-row no-gutters class="justify-center justify-sm-end">
-          <div class="total-price">₺ {{ calculatePrice() }}</div>
+          <div class="total-price">₺ {{ price }}</div>
         </v-row>
       </v-col>
     </v-row>
@@ -92,7 +92,7 @@
 </template>
 
 <script>
-import { mapActions, mapGetters } from "vuex";
+import { mapActions } from "vuex";
 export default {
   props: {
     selectedHotel: {
@@ -105,24 +105,31 @@ export default {
       selectedRoomType: -1,
       selectedRoomScenic: -1,
       room_type: null,
-      room_scenic: null
+      room_scenic: null,
+      price: 0
     };
   },
   computed: {
-    ...mapGetters({
-      getFormData: "hotelModule/getFormData"
-    })
+    // ...mapGetters({
+    //   getFormData: "hotelModule/getFormData"
+    // }),
+    getFormData: function() {
+      const parsedStorage = JSON.parse(localStorage.getItem("formData"));
+      console.log("Parsed Storage", parsedStorage);
+      return parsedStorage !== null ? parsedStorage : null;
+    }
   },
   created() {
     const formData = JSON.parse(localStorage.getItem("formData"));
     console.log("DETAILS CREATED CALL", this.getFormData["FORM_2"]);
-    if (formData["FORM_2"]) {
+    if (formData !== undefined && formData["FORM_2"] !== undefined) {
       const {
-        data: { room_scenic, room_type }
+        data: { room_scenic, room_type, price }
       } = formData["FORM_2"];
       console.log("FORM 2 data", formData["FORM_2"]);
       this.room_type = room_type;
       this.room_scenic = room_scenic;
+      this.price = price;
     }
   },
   methods: {
@@ -130,25 +137,25 @@ export default {
       actionPushFormData: "hotelModule/actionPushFormData"
     }),
     calculatePrice: function() {
-      if (this.selectedRoomScenic === -1 || this.selectedRoomType === -1) {
+      console.log("Calculate again room", this.room_type);
+      console.log("Calculate again scenic", this.room_scenic);
+      if (this.room_type === null || this.room_scenic === null) {
         return 0;
       }
       const {
         FORM_1: {
-          data: { adult_size }
+          data: { adult }
         }
       } = this.getFormData;
-      const { room_type, room_scenic } = this.selectedHotel;
       console.log("SELECTED HOTEL", this.selectedHotel);
-      let room_price = room_type[this.selectedRoomType]["price"] * adult_size;
-      const { price_rate } = room_scenic[this.selectedRoomScenic];
-      console.log("Room price", room_price);
-      console.log("Room price", price_rate);
-      room_price += (room_price * price_rate) / 100;
+      let room_price = this.room_type.price * adult;
+      console.log("Room price", this.room_type.price);
+      console.log("Price rate", this.room_scenic.price_rate);
+      room_price += (room_price * this.room_scenic.price_rate) / 100;
       return room_price;
     },
     validateDetailsForm: function() {
-      if (this.selectedRoomScenic === -1 || this.selectedRoomType === -1) {
+      if (this.room_type === null || this.room_scenic === -1) {
         return false;
       }
       this.actionPushFormData({
@@ -164,10 +171,12 @@ export default {
     selectRoom: function(i, item) {
       this.selectedRoomType = i;
       this.room_type = item;
+      this.price = this.calculatePrice();
     },
     selectView: function(i, item) {
       this.selectedRoomScenic = i;
       this.room_scenic = item;
+      this.price = this.calculatePrice();
     }
   }
 };

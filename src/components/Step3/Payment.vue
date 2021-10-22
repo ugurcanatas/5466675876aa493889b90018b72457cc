@@ -17,7 +17,9 @@
               <div class="number">
                 {{
                   formModel["cardnumber"] !== ""
-                    ? formModel["cardnumber"]
+                    ? formModel["cardnumber"].length > 16
+                      ? `Enter a valid card number`
+                      : formModel["cardnumber"].match(/.{1,4}/g).join(" ")
                     : "1234 5678 9101 1121"
                 }}
               </div>
@@ -26,7 +28,9 @@
               <div class="username">
                 {{
                   formModel["cardholder"] !== ""
-                    ? formModel["cardholder"]
+                    ? formModel["cardholder"].length > 18
+                      ? `${formModel["cardholder"].slice(0, 18)}...`
+                      : formModel["cardholder"]
                     : "Cardholder Name"
                 }}
               </div>
@@ -56,32 +60,43 @@
           <h2 class="default-header py-2 hairline bottom">
             Card Information
           </h2>
-          <v-row no-gutters>
-            <v-text-field
-              v-model="formModel['cardholder']"
-              label="Cardholder Name"
-            />
-            <span class="mx-sm-2" />
-            <v-text-field
-              label="Card Number"
-              v-model="formModel['cardnumber']"
-            />
-          </v-row>
-          <v-row no-gutters>
-            <v-select
-              v-model="formModel['month']"
-              label="Expiration Month"
-              :items="months"
-            />
-            <span class="mx-sm-2" />
-            <v-select
-              label="Expiration Year"
-              v-model="formModel['year']"
-              :items="years"
-            />
-            <span class="mx-sm-2" />
-            <v-text-field label="CVV" v-model="formModel['card_cvv']" />
-          </v-row>
+          <v-form v-model="valid" ref="paymentForm">
+            <v-row no-gutters>
+              <v-text-field
+                v-model="formModel['cardholder']"
+                label="Cardholder Name"
+                required
+              />
+              <span class="mx-sm-2" />
+              <v-text-field
+                label="Card Number"
+                v-model="formModel['cardnumber']"
+                required
+                :rules="cardNumberRules"
+              />
+            </v-row>
+            <v-row no-gutters>
+              <v-select
+                v-model="formModel['month']"
+                label="Expiration Month"
+                :items="months"
+                required
+              />
+              <span class="mx-sm-2" />
+              <v-select
+                label="Expiration Year"
+                v-model="formModel['year']"
+                :items="years"
+                required
+              />
+              <span class="mx-sm-2" />
+              <v-text-field
+                label="CVV"
+                v-model="formModel['card_cvv']"
+                required
+              />
+            </v-row>
+          </v-form>
         </v-col>
       </v-col>
       <v-col>
@@ -103,16 +118,39 @@ export default {
         card_cvv: ""
       },
       months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
-      years: []
+      years: Array.from(
+        {
+          length: 20
+        },
+        (_, i) => i + 2021
+      ),
+      valid: true,
+      cardNumberRules: [
+        v => !!v || "Card number is required",
+        v =>
+          /^(?:(4[0-9]{12}(?:[0-9]{3})?)|(5[1-5][0-9]{14})|(6(?:011|5[0-9]{2})[0-9]{12})|(3[47][0-9]{13})|↵(3(?:0[0-5]|[68][0-9])[0-9]{11})|((?:2131|1800|35[0-9]{3})[0-9]{11}))/.test(
+            v
+          ) || "Please enter a valid card number",
+        v => v.length === 16 || "Card number is required"
+      ]
     };
   },
   created() {
-    this.years = Array.from(
-      {
-        length: 20
-      },
-      (_, i) => i + 2021
-    );
+    // this.years = Array.from(
+    //   {
+    //     length: 20
+    //   },
+    //   (_, i) => i + 2021
+    // );
+  },
+  methods: {
+    validatePaymentForm: function() {
+      console.log(
+        "Validate Payment Called",
+        this.formModel,
+        this.$refs.paymentForm.validate()
+      );
+    }
   }
 };
 </script>
@@ -162,17 +200,20 @@ $default_font: 'Inconsolata', monospace
         & span
             font-family: $default_font !important
             color: white
+            text-shadow: 0px 1px 1px #000000
     >.username
         color: white
         font-size: 1.1em
         font-weight: 600
         font-family: $default_font !important
         border-radius: 4px
+        text-shadow: 0px 1px 1px #000000
     >.number
         color: white
         font-size: 1.4em
         font-weight: 600
         font-family: $default_font !important
+        text-shadow: 0px 3px 2px #000000
     >.type
         background-image: url("~@/assets/visa.svg")
         height: 48px

@@ -17,7 +17,7 @@
       v-else-if="currentCrumbIndex === 1"
       :selected-hotel="selectedHotel"
     />
-    <payment v-else-if="currentCrumbIndex === 2" />
+    <payment ref="paymentRef" v-else-if="currentCrumbIndex === 2" />
 
     <pagination-buttons
       @nextForm="nextFormEvent"
@@ -157,6 +157,12 @@ export default {
       ) {
         console.log("Details Form Validated");
         this.currentCrumbIndex++;
+      } else if (
+        this.currentCrumbIndex === 2 &&
+        this.$refs.paymentRef.validatePaymentForm()
+      ) {
+        console.log("Payment Form Validated");
+        //this.currentCrumbIndex++; router push here
       }
     },
     previousFormEvent: function() {

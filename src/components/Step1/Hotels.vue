@@ -50,13 +50,14 @@ export default {
   data() {
     return {
       formModel: {
-        adult_size: 1,
-        child_size: 0
+        adult: 1,
+        child: 0
       },
       selectedItem: -1,
       singleHotelInfo: {},
       showSidebar: false,
-      filterOnCreated: false
+      filterOnCreated: false,
+      selectedHotelObject: {}
     };
   },
   computed: {
@@ -76,9 +77,10 @@ export default {
     formModel: {
       deep: true,
       handler: function(v) {
-        const { adult_size, child_size } = v;
+        const { adult, child } = v;
+        console.log("Deep Watch", v);
         if (this.filterOnCreated) {
-          this.filterHotels({ child_size, adult_size });
+          this.filterHotels({ child, adult });
         }
       }
     }
@@ -102,7 +104,7 @@ export default {
       actionPushFormData: "hotelModule/actionPushFormData",
       actionHotelSelected: "hotelModule/actionHotelSelected"
     }),
-    filterHotels: function({ child_size, adult_size }) {
+    filterHotels: function({ child, adult }) {
       //When manually filtering/searching, disable filterOnCreated
       //We don't want to call filterHotels back to back
       this.filterOnCreated = false;
@@ -112,9 +114,9 @@ export default {
       let filteredHotels = this.hotelsWithDetails.map(hotel => {
         const { max_adult_size, child_status } = hotel;
         let isDisabled = false;
-        if ((!child_status && child_size > 0) || max_adult_size < adult_size) {
+        if ((!child_status && child > 0) || max_adult_size < adult) {
           isDisabled = true;
-        } else if (child_size === 0 && adult_size === 1) {
+        } else if (child === 0 && adult === 1) {
           isDisabled = false;
         }
         return {
@@ -153,13 +155,20 @@ export default {
         return false;
       }
       localStorage.getItem("formData") && localStorage.removeItem("formData");
-      this.actionPushFormData({ data: this.formModel, type: "FORM_1" });
+      this.actionPushFormData({
+        data: {
+          ...this.formModel,
+          hotel_id: this.selectedHotelObject.id
+        },
+        type: "FORM_1"
+      });
       return true;
     },
     selectCard: function({ itemIndex, item }) {
       if (this.$refs.formRef.$refs.nestedRef.validate()) {
         console.log("Card Clicked", this.formModel);
         this.selectedItem = itemIndex;
+        this.selectedHotelObject = item;
         this.actionHotelSelected(item);
         //this.$emit("cardSelected", item);
       }
