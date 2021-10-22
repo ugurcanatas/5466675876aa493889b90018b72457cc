@@ -22,11 +22,12 @@
       </div>
       <div style="height: 100%;">
         <iframe
+          src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d24384.353245689297!2d29.00325369066531!3d41.11091806470348!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1str!2str!4v1634938131776!5m2!1str!2str"
           width="100%"
           height="100%"
-          src="https://api.mapbox.com/styles/v1/telixtelemetry/ckv2valyl445f14o3uwgxbvai.html?title=false&access_token=pk.eyJ1IjoidGVsaXh0ZWxlbWV0cnkiLCJhIjoiY2t2MnY4c2JwMGNhbjJ1bzAzcGMwbmlsbiJ9.H697GUCGTUOv2e_a7iAmFw&zoomwheel=false#12/48.8665/2.3176"
-          title="Basic"
-          style="border:none;"
+          style="border:0;"
+          allowfullscreen=""
+          loading="lazy"
         ></iframe>
       </div>
     </div>
