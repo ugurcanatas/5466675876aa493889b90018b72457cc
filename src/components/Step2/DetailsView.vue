@@ -134,7 +134,8 @@ export default {
   },
   methods: {
     ...mapActions({
-      actionPushFormData: "hotelModule/actionPushFormData"
+      actionPushFormData: "hotelModule/actionPushFormData",
+      actionSetFullPreview: "hotelModule/actionSetFullPreview"
     }),
     calculatePrice: function() {
       console.log("Calculate again room", this.room_type);
@@ -165,6 +166,17 @@ export default {
           price: this.calculatePrice()
         },
         type: "FORM_2"
+      });
+      this.actionSetFullPreview({
+        hotel: this.selectedHotel.hotel_name,
+        city: this.selectedHotel.city,
+        room: this.room_type,
+        scenic: this.room_scenic,
+        child: this.getFormData["FORM_1"].data.child,
+        adult: this.getFormData["FORM_1"].data.adult,
+        price: this.price,
+        start: this.getFormData["FORM_1"].data.start_date,
+        end: this.getFormData["FORM_1"].data.end_date
       });
       return true;
     },

@@ -1,8 +1,8 @@
 <template>
   <div class="middle-container align-self-stretch flex-grow-1 ">
-    <v-row no-gutters>
-      <v-col>
-        <v-row no-gutters class="justify-center">
+    <div style="height:100%; display:flex; flex-direction:row;" no-gutters>
+      <div style="flex:1">
+        <div style="display:flex; justify-content:center">
           <div class="credit-card pa-2">
             <div class="default-row">
               <div class="bank"><span>DB Debit</span> Card</div>
@@ -16,36 +16,34 @@
               <!-- <div class="card-chip" /> -->
               <div class="number">
                 {{
-                  formModel["cardnumber"] !== ""
-                    ? formModel["cardnumber"].length > 16
+                  formModel["card_number"] !== ""
+                    ? formModel["card_number"].length > 16
                       ? `Enter a valid card number`
-                      : formModel["cardnumber"].match(/.{1,4}/g).join(" ")
-                    : "1234 5678 9101 1121"
+                      : formModel["card_number"].match(/.{1,4}/g).join(" ")
+                    : "1234 **** **** 3210"
                 }}
               </div>
             </div>
             <div class="default-row ">
               <div class="username">
                 {{
-                  formModel["cardholder"] !== ""
-                    ? formModel["cardholder"].length > 18
-                      ? `${formModel["cardholder"].slice(0, 18)}...`
-                      : formModel["cardholder"]
+                  formModel["card_name"] !== ""
+                    ? formModel["card_name"].length > 18
+                      ? `${formModel["card_name"].slice(0, 18)}...`
+                      : formModel["card_name"]
                     : "Cardholder Name"
                 }}
               </div>
               <div class="cvv-exp">
                 <span>{{
-                  formModel["month"] !== ""
-                    ? String(formModel["month"]).length === 1
-                      ? `0${formModel["month"]}`
-                      : formModel["month"]
+                  formModel["card_date_month"] !== ""
+                    ? formModel["card_date_month"]
                     : "**"
                 }}</span>
                 <span>/</span>
                 <span>{{
-                  formModel["year"] !== ""
-                    ? String(formModel["year"]).slice(2, 4)
+                  formModel["card_date_year"] !== ""
+                    ? String(formModel["card_date_year"]).slice(2, 4)
                     : "**"
                 }}</span>
                 <span class="mx-1" />
@@ -55,76 +53,173 @@
               </div>
             </div>
           </div>
-        </v-row>
-        <v-col class="py-4 px-16">
+        </div>
+        <div class="py-4 px-16 flex-1">
           <h2 class="default-header py-2 hairline bottom">
             Card Information
           </h2>
           <v-form v-model="valid" ref="paymentForm">
             <v-row no-gutters>
               <v-text-field
-                v-model="formModel['cardholder']"
+                v-model="formModel['card_name']"
                 label="Cardholder Name"
                 required
+                :rules="defaultRule"
               />
               <span class="mx-sm-2" />
               <v-text-field
                 label="Card Number"
-                v-model="formModel['cardnumber']"
+                v-model="formModel['card_number']"
                 required
                 :rules="cardNumberRules"
               />
             </v-row>
             <v-row no-gutters>
               <v-select
-                v-model="formModel['month']"
+                v-model="formModel['card_date_month']"
                 label="Expiration Month"
                 :items="months"
                 required
+                :rules="defaultRule"
               />
               <span class="mx-sm-2" />
               <v-select
                 label="Expiration Year"
-                v-model="formModel['year']"
+                v-model="formModel['card_date_year']"
                 :items="years"
                 required
+                :rules="defaultRule"
               />
               <span class="mx-sm-2" />
               <v-text-field
                 label="CVV"
                 v-model="formModel['card_cvv']"
                 required
+                :rules="defaultRule"
               />
             </v-row>
           </v-form>
-        </v-col>
-      </v-col>
-      <v-col>
-        Right Side
-      </v-col>
-    </v-row>
+        </div>
+      </div>
+      <div class="right-hand-side">
+        <full-preview>
+          <template v-slot:coupon>
+            <div style="display:flex; flex-direction:row; align-items:center">
+              <v-text-field
+                v-model="formModel['coupon_code']"
+                label="Enter Coupon Code"
+              />
+              <span class="mx-4" />
+              <v-btn
+                @click="useCode"
+                color="#51FFB2"
+                elevation="1"
+                :disabled="discount.discountUsed"
+              >
+                Use Code</v-btn
+              >
+            </div>
+          </template>
+          <template v-slot:price>
+            <div class="py-2 hairline bottom">
+              <div
+                style="display:flex; align-items:center; justify-content:space-between;"
+              >
+                <div class="smallcap mr-2">room price</div>
+                <div class="text-value ml-2">₺ {{ getFullPreview.price }}</div>
+              </div>
+            </div>
+            <div class="py-2 hairline bottom">
+              <div
+                style="display:flex; align-items:center; justify-content:space-between;"
+              >
+                <div class="smallcap mr-2">extras</div>
+                <div class="text-value ml-2">
+                  % {{ getFullPreview.scenic.price_rate }}
+                </div>
+              </div>
+            </div>
+            <div class="py-2 hairline bottom">
+              <div
+                style="display:flex; align-items:center; justify-content:space-between;"
+              >
+                <div class="smallcap mr-2">total stay</div>
+                <div class="text-value ml-2">
+                  ({{ getTotalStay }} days)
+                  <span class="ml-4"
+                    >₺ {{ getFullPreview.price * getTotalStay }}</span
+                  >
+                </div>
+              </div>
+            </div>
+            <div v-if="discount.discountUsed" class="py-2 hairline bottom">
+              <div
+                style="display:flex; align-items:center; justify-content:space-between;"
+              >
+                <div class="smallcap mr-2">discount</div>
+                <div class="text-value ml-2">
+                  <span class="mr-4">({{ discount.code }})</span> -₺{{
+                    discount.discount_ammount
+                  }}
+                </div>
+              </div>
+            </div>
+            <div class="py-2 hairline bottom">
+              <div
+                style="display:flex; align-items:center; justify-content:space-between;"
+              >
+                <div class="smallcap large mr-2">total</div>
+                <div class="text-value ml-2">
+                  ₺ {{ getTotalPrice(discount.discountUsed) }}
+                </div>
+              </div>
+            </div>
+          </template>
+        </full-preview>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
+import { mapGetters, mapActions } from "vuex";
+//import router from "../../router/index";
+import FullPreview from "../FullPreview.vue";
 export default {
+  components: {
+    FullPreview
+  },
   data() {
     return {
       formModel: {
-        cardholder: "",
-        cardnumber: "",
-        month: "",
-        year: "",
+        card_name: "",
+        card_number: "",
+        card_date_month: "",
+        card_date_year: "",
         card_cvv: ""
       },
-      months: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12],
+      months: [
+        "01",
+        "02",
+        "03",
+        "04",
+        "05",
+        "06",
+        "07",
+        "08",
+        "09",
+        "10",
+        "11",
+        "12"
+      ],
       years: Array.from(
         {
           length: 20
         },
-        (_, i) => i + 2021
+        (_, i) => `${i + 2021}`
       ),
       valid: true,
+      defaultRule: [v => !!v || "Card name is required"],
       cardNumberRules: [
         v => !!v || "Card number is required",
         v =>
@@ -132,24 +227,130 @@ export default {
             v
           ) || "Please enter a valid card number",
         v => v.length === 16 || "Card number is required"
-      ]
+      ],
+      discount: {
+        discountUsed: false,
+        code: "",
+        discount_ammount: 0,
+        expiration_at: ""
+      },
+      lastPrice: 0
     };
   },
-  created() {
-    // this.years = Array.from(
-    //   {
-    //     length: 20
-    //   },
-    //   (_, i) => i + 2021
-    // );
+  computed: {
+    ...mapGetters({
+      getFullPreview: "hotelModule/getFullPreview"
+    }),
+    getTotalStay: function() {
+      return (
+        (new Date(this.getFullPreview.end).getTime() -
+          new Date(this.getFullPreview.start).getTime()) /
+        (1000 * 3600 * 24)
+      );
+    }
   },
   methods: {
-    validatePaymentForm: function() {
+    ...mapActions({
+      actionSetReservation: "hotelModule/actionSetReservation"
+    }),
+    validatePaymentForm: async function() {
       console.log(
         "Validate Payment Called",
         this.formModel,
-        this.$refs.paymentForm.validate()
+        this.$refs.paymentForm.validate(),
+        this.getFullPreview
       );
+      if (!this.$refs.paymentForm.validate()) {
+        return false;
+      }
+
+      const { FORM_1, FORM_2 } = JSON.parse(localStorage.getItem("formData"));
+      //hotel id should be a nubmer
+      const {
+        data: { adult, child, end_date, start_date, hotel_id }
+      } = FORM_1;
+      const {
+        data: {
+          room_scenic: { id: room_type },
+          room_scenic: { id: room_scenic }
+        }
+      } = FORM_2;
+
+      let body = {
+        hotel_id: Number(hotel_id),
+        start_date,
+        end_date,
+        adult,
+        child,
+        room_type,
+        room_scenic,
+        price: this.lastPrice,
+        coupon_code: this.discount.discountUsed ? this.discount.code : "",
+        ...this.formModel
+      };
+
+      console.log("Full Data", body);
+      try {
+        const postresponse = await fetch(
+          process.env.VUE_APP_ENDPOINT_RESERVATIONS,
+          {
+            method: "POST",
+            body: JSON.stringify(body)
+          }
+        );
+
+        const reservation = await postresponse.json();
+        console.log("Reservation response", reservation);
+        this.actionSetReservation(reservation);
+        this.$router.replace({
+          name: "Reservations",
+          params: {
+            reservation
+          }
+        });
+        //return
+      } catch (error) {
+        return false;
+      }
+    },
+    useCode: async function() {
+      try {
+        const response = await fetch(
+          `${process.env.VUE_APP_ENDPOINT_COUPON_CODE}${this.formModel["coupon_code"]}`,
+          {
+            method: "GET"
+          }
+        );
+
+        const result = await response.json();
+        //check if there is a coupon code returned
+        /* eslint-disable */
+        if (result.length > 0) {
+          const { code, discount_ammount, expiration_at } = result[0];
+          if (new Date() < new Date(expiration_at)) {
+            console.log("Yes this is a valid code");
+            this.discount = {
+              ...this.discount,
+              discount_ammount,
+              code,
+              expiration_at,
+              discountUsed: true
+            };
+          }
+          console.log("COUPON RESULT", result);
+          return;
+        }
+      } catch (error) {
+        throw new Error(error.message);
+      }
+      this.discount["discountUsed"] = false;
+    },
+    getTotalPrice: function(isDiscounted) {
+      this.lastPrice = isDiscounted
+        ? this.getTotalStay * this.getFullPreview.price -
+          this.discount.discount_ammount
+        : this.getTotalStay * this.getFullPreview.price;
+      return this.lastPrice;
     }
   }
 };
@@ -184,11 +385,13 @@ $default_font: 'Inconsolata', monospace
     height: 178px
     background-size: 100%
     background-image: url("~@/assets/sample-card.png")
-    border-radius: 16px
+    border-radius: 8px
     margin: 12px 64px
     display: flex
     flex-direction: column
     justify-content: space-between
+    // box-shadow: 0px 0px 10px 5px rgba(255,74,155,0.25)
+    box-shadow: 0px 0px 20px 3px rgba(49,57,240,0.3)
 
 .default-row
     display: flex
@@ -240,4 +443,11 @@ $default_font: 'Inconsolata', monospace
         width: 36px
         background-size: 100%
         background-position: center
+
+.right-hand-side
+    background-color: #f7f8ff
+    padding: 16px 64px
+    display: flex
+    flex-direction: column
+    flex: 1
 </style>

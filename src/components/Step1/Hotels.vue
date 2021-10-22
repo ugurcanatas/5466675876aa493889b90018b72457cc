@@ -96,6 +96,8 @@ export default {
       console.log("FORM 1 data", data);
       this.formModel = data;
       this.filterOnCreated = true;
+    } else {
+      this.formModel = {};
     }
   },
   methods: {

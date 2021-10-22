@@ -11,6 +11,8 @@ const hotelModule = {
     filteredHotels: [],
     isFiltered: false,
     selectedHotel: {},
+    fullPreview: {},
+    reservation: {},
   }),
   getters: {
     getHotels: (state) => {
@@ -35,6 +37,12 @@ const hotelModule = {
     },
     getSelectedHotel: (state) => {
       return state.selectedHotel;
+    },
+    getFullPreview: (state) => {
+      return state.fullPreview;
+    },
+    getReservation: (state) => {
+      return state.reservation;
     },
   },
   mutations: {
@@ -82,6 +90,17 @@ const hotelModule = {
     setSelectedHotel: (state, payload) => {
       state.selectedHotel = payload;
     },
+    setFullPreview: (state, payload) => {
+      state.fullPreview = payload;
+    },
+    setReservation: (state, payload) => {
+      state.reservation = payload;
+    },
+    reset: (state) => {
+      localStorage.removeItem("formData");
+      state.reservation = {};
+      state.fullPreview = {};
+    },
   },
   actions: {
     actionPushHotels: ({ commit }, payload) => {
@@ -117,6 +136,15 @@ const hotelModule = {
     },
     actionHotelSelected: ({ commit }, payload) => {
       commit("setSelectedHotel", payload);
+    },
+    actionSetFullPreview: ({ commit }, payload) => {
+      commit("setFullPreview", payload);
+    },
+    actionSetReservation: ({ commit }, payload) => {
+      commit("setReservation", payload);
+    },
+    actionClear: ({ commit }) => {
+      commit("reset");
     },
   },
   //setting namespace to true so we don't get "unknown action type error" from Vue

@@ -1,6 +1,5 @@
 <template>
   <div class="hotels-filter-wrapper">
-    {{ formModel }}
     <v-form v-model="validForm" ref="nestedRef">
       <v-row no-gutters>
         <v-select
@@ -78,14 +77,6 @@ export default {
       }
     };
   },
-  watch: {
-    formModel: {
-      deep: true,
-      handler: function(v) {
-        console.log("Deep Watch Value", v);
-      }
-    }
-  },
   mounted() {
     // const inp = this.$refs.adultSizeField.$el.querySelector("input");
     // inp.max = 5;
@@ -94,8 +85,8 @@ export default {
   methods: {
     autoCompleteValidation: function() {
       this.$emit("limitChecker", {
-        child_size: this.formModel["child"],
-        adult_size: this.formModel["adult"]
+        child: this.formModel["child"],
+        adult: this.formModel["adult"]
       });
     }
   }
